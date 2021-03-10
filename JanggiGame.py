@@ -649,7 +649,7 @@ class Guard(Piece):
                         self._move_map.remove((x, y))
                         ele -= 1
                 if self._team == "red":
-                    if 3 <= x or x <= 0 or 6 <= y or y <= 6:
+                    if 3 <= x or x < 0 or 6 <= y or y <= 2:
                         self._move_map.remove((x, y))
                         ele -= 1
 
@@ -1009,8 +1009,6 @@ class Cannon(Piece):
 
 if __name__ == "__main__":
     g = JanggiGame()
-    g.make_move("a10", "a8")
-    g.make_move("a1", "a2")
-    g.make_move("a8", "a9")
-    g.make_move("a2", "d2")
-    g.make_move("a9", "c9")
+    g.make_move("d10", "d9")
+    g.make_move("d1", "d2")
+
