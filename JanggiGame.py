@@ -109,6 +109,9 @@ class JanggiGame:
 
         # change turn
         self.set_whose_turn()
+
+        self._board.print_game_board()
+
         return True
 
 
@@ -776,10 +779,12 @@ class Chariot(Piece):
 
         # generate all possible moves
         for x in range(board_len):
-            self._move_map.append((self._row +x, self._col +y)) and self._move_map.append((self._row -x, self._col +y))
+            self._move_map.append((self._row +x, self._col +y))
+            self._move_map.append((self._row -x, self._col +y))
 
         for y in range(board_width):
-            self._move_map.append((self._row +x, self._col +y)) and self._move_map.append((self._row +x, self._col -y))
+            self._move_map.append((self._row +x, self._col +y))
+            self._move_map.append((self._row +x, self._col -y))
 
         # if piece is in the fortress invoke fortress moves
         blue_fortress = board_obj.get_blue_fortress()
@@ -1005,17 +1010,6 @@ class Cannon(Piece):
 
 if __name__ == "__main__":
     g = JanggiGame()
-    g.make_move("a7", "b7")  # blue turn
-    g.make_move("i4", "h4")  # red turn
-    g.make_move("h10", "g8")  # blue turn
-    g.make_move("c1", "d3")  # red turn captures blue soldier
-    g.make_move("h8", "e8")  # blue horse moves
-    g.make_move("i1", "i2")  # red turn
-    g.make_move("e7", "f7")
-    g.make_move("b3", "e3")
-    g.make_move("g10", "e7")
-    g.make_move("e4", "d4")
-    g.make_move("c10", "d8")
-    g.make_move("g1", "e4")
-    g.make_move("f10", "f9")
-    g.make_move("h1", "g3")
+    g.make_move("a10", "a8")
+    g.make_move("a1", "a2")
+    g.make_move("a8", "a9")
