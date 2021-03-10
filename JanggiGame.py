@@ -774,17 +774,16 @@ class Chariot(Piece):
         board_len = len(board)
         board_width = len(board[0])
         row, col = fut_row, fut_col
-        x = 0
         y = 0
-
+        i = 0
         # generate all possible moves
         for x in range(board_len):
-            self._move_map.append((self._row +x, self._col +y))
-            self._move_map.append((self._row -x, self._col +y))
+            self._move_map.append((self._row + x, self._col + y))
+            self._move_map.append((self._row - x, self._col + y))
 
-        for y in range(board_width):
-            self._move_map.append((self._row +x, self._col +y))
-            self._move_map.append((self._row +x, self._col -y))
+        for j in range(board_width):
+            self._move_map.append((self._row + i, self._col + j))
+            self._move_map.append((self._row + i, self._col - j))
 
         # if piece is in the fortress invoke fortress moves
         blue_fortress = board_obj.get_blue_fortress()
@@ -1013,3 +1012,5 @@ if __name__ == "__main__":
     g.make_move("a10", "a8")
     g.make_move("a1", "a2")
     g.make_move("a8", "a9")
+    g.make_move("a2", "d2")
+    g.make_move("a9", "c9")
