@@ -109,7 +109,7 @@ class JanggiGame:
             return False
 
         # make move
-        self._board.move_piece(piece, row, col)
+        self._board.move_piece(piece, fut_row, fut_col)
 
         # change turn
         self.set_whose_turn()
@@ -1010,17 +1010,17 @@ class Cannon(Piece):
 
 if __name__ == "__main__":
     g = JanggiGame()
-    g.make_move(input("type a from location: "), input("type a to location: "))  # blue turn
-    g.make_move(input("type a from location: "), input("type a to location: "))  # red turn
-    g.make_move(input("type a from location: "), input("type a to location: "))  # blue turn
-    g.make_move(input("type a from location: "), input("type a to location: "))  # red turn captures blue soldier
-    g.make_move(input("type a from location: "), input("type a to location: "))  # blue horse moves
-    g.make_move(input("type a from location: "), input("type a to location: "))  # red turn
-    g.make_move(input("type a from location: "), input("type a to location: "))
-    g.make_move(input("type a from location: "), input("type a to location: "))
-    g.make_move(input("type a from location: "), input("type a to location: "))
-    g.make_move(input("type a from location: "), input("type a to location: "))
-    g.make_move(input("type a from location: "), input("type a to location: "))
-    g.make_move(input("type a from location: "), input("type a to location: "))
-    g.make_move(input("type a from location: "), input("type a to location: "))
-    g.make_move(input("type a from location: "), input("type a to location: "))
+    g.make_move("a7", "b7")  # blue turn
+    g.make_move("i4", "h4")  # red turn
+    g.make_move("h10", "g8")  # blue turn
+    g.make_move("c1", "d3")  # red turn captures blue soldier
+    g.make_move("h8", "e8")  # blue horse moves
+    g.make_move("i1", "i2")  # red turn
+    g.make_move("e7", "f7")
+    g.make_move("b3", "e3")
+    g.make_move("g10", "e7")
+    g.make_move("e4", "d4")
+    g.make_move("c10", "d8")
+    g.make_move("g1", "e4")
+    g.make_move("f10", "f9")
+    g.make_move("h1", "g3")
