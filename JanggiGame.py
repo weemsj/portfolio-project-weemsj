@@ -109,6 +109,7 @@ class JanggiGame:
 
         # change turn
         self.set_whose_turn()
+        return True
 
 
 class Board:
