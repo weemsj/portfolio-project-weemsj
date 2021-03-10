@@ -65,7 +65,7 @@ class JanggiGame:
         :param finish: string represents square to move to
         :return: True or False
         """
-
+        print("make_move(", start, ",", finish, ")")
         # check for game status
         if self.get_game_state() != 'UNFINISHED':
             return False
