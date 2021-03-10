@@ -45,7 +45,6 @@ class JanggiGame:
 
     def get_whose_turn(self):
         """returns private data member whose turn"""
-        print(self._whose_turn + " It's your move!")
         return self._whose_turn
 
     def is_in_check(self, player):
@@ -70,9 +69,6 @@ class JanggiGame:
         # check for game status
         if self.get_game_state() != 'UNFINISHED':
             return False
-
-        # prints the game board before move
-        self._board.print_game_board()
 
         # check to make sure player is moving the correct piece
         if not self._board.is_player_piece(self, start):
@@ -113,8 +109,6 @@ class JanggiGame:
 
         # change turn
         self.set_whose_turn()
-
-        self._board.print_game_board()
 
 
 class Board:
