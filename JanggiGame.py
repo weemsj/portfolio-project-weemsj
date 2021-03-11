@@ -529,7 +529,7 @@ class General(Piece):
                         self._move_map.remove((x,y))
                         ele -= 1
                 if self._team == "red":
-                    if 3 <= x or x <= 0 or 6 <= y or y <= 2:
+                    if 3 <= x or x < 0 or 6 <= y or y <= 2:
                         self._move_map.remove((x,y))
                         ele -= 1
 
