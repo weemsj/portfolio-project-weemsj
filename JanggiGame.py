@@ -78,27 +78,30 @@ class JanggiGame:
         row, col = self._board.algebraic_to_index(start)
         piece = self._board.get_piece(row, col)
 
+        # finish location
+        fut_row, fut_col = self._board.algebraic_to_index(finish)
+
         # check if General is in check then find move to get out of check
         team = piece.get_team()
-        for general in self._board.get_generals_in_check():
+        generals_in_check = self._board.get_generals_in_check()
+        for general in generals_in_check:
             # check to see if your general is in the list of checked generals if so pass the general to the neutralize
             # threat method
             if general.get_team() == team:
-                threats = general.get_threatened_by()
-                self._board.neutralize_threats(self, general, threats)
-
+                if self._board.neutralize_threats(self, general, piece, fut_row, fut_col):
+                    self._board.move_piece(piece, fut_row, fut_col)
+                    self._board.print_game_board()
+                    self.set_whose_turn()
+                    return True
                 # check for game status
                 if self.get_game_state() != 'UNFINISHED':
                     return False
-                return True
+
             elif team == "blue":
                 self._game_state = "BLUE_WON"
             else:
                 self._game_state = "RED_WON"
             return True
-
-        # finish location
-        fut_row, fut_col = self._board.algebraic_to_index(finish)
 
         # check piece rules
         if not piece.move_rules(self._board, fut_row, fut_col):
@@ -107,6 +110,8 @@ class JanggiGame:
         # make move
         if not self._board.move_piece(piece, fut_row, fut_col):
             return False
+
+        self._board.print_game_board()
 
         # change turn
         self.set_whose_turn()
@@ -228,7 +233,16 @@ class Board:
         col = conversion[first_char]
         return row, col
 
-    def move_piece(self,piece, row, col):
+    def index_to_algebraic(self, row, col):
+        """takes a row and column index and returns an algebraic expression"""
+        revert = self._revert
+
+        first_char = revert[col]
+        nums = str(row + 1)
+
+        return first_char + nums
+
+    def move_piece(self, piece, row, col):
         """ updates chess board and object location after proposed move has been validated"""
         # preserve current position in case move is unsuccessful and we have to revert back
         prev_row = piece.get_row()
@@ -256,9 +270,11 @@ class Board:
 
         for general in self._generals_in_check:
             if general.get_team() == piece.get_team():
-                self._board[prev_row][prev_col] = piece
-                self._board[row][col] = occupant
-            return False
+                if not self.recheck_threats(general, row, col):
+                    self._board[prev_row][prev_col] = piece
+                    self._board[row][col] = occupant
+                    return False
+
         piece.set_row(row)
         piece.set_col(col)
 
@@ -297,18 +313,18 @@ class Board:
 
         # generate a new move map with the generals location as the move to if its a valid move the general is in check
         if piece.move_rules(self, row, col):
-            general.set_checked(piece)
+            general.add_threat(piece)
             self._generals_in_check.append(general)
             return
         # if next move doesn't create a checked scenario, check the generals checked_by list to make sure the piece
         # isn't listed. If the piece is listed, remove the piece from the list. If there is only one element in the list
         # and the element is the newly moved piece then take the piece out of check and check by = False
-        checked_by = general.get_checked()
+        checked_by = general.get_threatened_by()
 
         if checked_by:
             for obj in checked_by:
                 if obj == piece:
-                    general.remove_check(piece)
+                    general.remove_threat(piece)
 
         if not checked_by:
             for gen in self._generals_in_check:
@@ -373,11 +389,19 @@ class Board:
         # empties space
         self._board[row][col] = "-----"
 
-    def neutralize_threats(self, game, general, threats):
+    def neutralize_threats(self, game, general, curr_piece, fut_row, fut_col):
+        board_len = len(self._board)
+        board_width = len(self._board[0])
         row = general.get_row()
         col = general.get_col()
         neutralize = []
         move_direction = [(1, 0), (0, 1), (-1, 0), (0, -1),(0, 0)]
+        threats = general.get_threatened_by()
+
+        if curr_piece.move_rules(self, fut_row, fut_col):
+            if self.move_piece(curr_piece, fut_row, fut_col):
+                if not threats:
+                    return True
 
         for threat in threats:
             threat_row = threat.get_row()
@@ -392,22 +416,32 @@ class Board:
                         for x,y in move_direction:
                             piece.move_rules(self, row + x, col + y)
                             moves = piece.get_move_map()
-                            neutralize.append(moves)
+                            for ele in moves:
+                                neutralize.append(ele)
                         for x,y in neutralize:
-                            if piece.make_move(self, x, y):
-                                self.move_piece(piece, x, y)
-                            for threat in threats:
-                                if not threat.move_rules(self, row, col):
-                                    general.remove_threat(threat)
-                                    game.set_whose_turn()
-                                    return
-                        else:
-                            if general.get_team() == "blue":
-                                game.set_game_state("RED_WON")
-                            else:
-                                game.set_game_state("BLUE_WON")
-                                return False
+                            if board_len > x >= 0 and board_width > y >= 0:
+                                if self.move_piece(piece, x, y):
+                                    for threat in threats:
+                                        if not threat.move_rules(self, row, col):
+                                            general.remove_threat(threat)
+                                            game.set_whose_turn()
+                                            return True
+                                else:
+                                    neutralize = []
+        else:
+            if general.get_team() == "blue":
+                game.set_game_state("RED_WON")
+            else:
+                game.set_game_state("BLUE_WON")
+                return False
 
+    def recheck_threats(self, general, gen_row, gen_col):
+        """after a potential move is made we recheck the threat to see if the threat still exist"""
+        threats = general.get_threatened_by()
+        for threat in threats:
+            if not threat.move_rules(self, gen_row, gen_col):
+                general.remove_threat(threat)
+                return True
 
 class Piece:
     """
@@ -477,15 +511,10 @@ class General(Piece):
         :param col: x-coordinates
         """
         super().__init__(board, title, team, row, col)
-        self._checked_by = []
         self._threatened_by = []
 
     def __repr__(self):
         return repr(self._title)
-
-    def get_checked(self):
-        """returns checked"""
-        return self._checked_by
 
     def get_threatened_by(self):
         """returns list of piece objects that threaten the general"""
@@ -498,17 +527,6 @@ class General(Piece):
     def add_threat(self, piece):
         """adds a threat to the generals threat list"""
         self._threatened_by.append(piece)
-
-    def set_checked(self, piece):
-        """adds game piece object to the list of game piece that have the General in check """
-        self._checked_by.append(piece)
-
-    def remove_check(self, piece):
-        """removes a piece from the list of game pieces that have the General in check"""
-        self._checked_by.remove(piece)
-
-    def reset_checked(self):
-        self._checked_by = []
 
     def move_rules(self, board_obj, fut_row, fut_col):
         """generals move rules"""
@@ -1068,3 +1086,4 @@ if __name__ == "__main__":
     g.make_move("e6", "e3")
     print(g.is_in_check("red"))
     print(g.is_in_check("blue"))
+    g.make_move("e9", "d9")
