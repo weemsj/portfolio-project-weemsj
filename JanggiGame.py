@@ -105,7 +105,8 @@ class JanggiGame:
             return False
 
         # make move
-        self._board.move_piece(piece, fut_row, fut_col)
+        if not self._board.move_piece(piece, fut_row, fut_col):
+            return False
 
         # change turn
         self.set_whose_turn()
@@ -240,7 +241,7 @@ class Board:
         # if future space is occupied check to see if the occupant is on the same team. If the team is the same the
         # move is invalid. If the occupant is the opps team we call the capture method.
         if occupant != "-----":
-            if occupant.get_team == piece.get_team:
+            if occupant.get_team() == piece.get_team():
                 return False
             # capture piece
             self.capture(row, col)
@@ -264,6 +265,7 @@ class Board:
 
         # now that the move has been made the next step is to check if the move put the opps general in check.
         self.general_in_check(piece)
+        return True
 
     def print_game_board(self):  # works
         """
@@ -1009,4 +1011,17 @@ class Cannon(Piece):
 if __name__ == "__main__":
     g = JanggiGame()
     g.make_move("e9", "f8")
-
+    g.make_move("e2", "f3")
+    g.make_move("f8", "g8")
+    g.make_move("f8", "f8")
+    g.make_move("f3", "f4")
+    g.make_move("f3", "f3")
+    g.make_move("f10", "e10")
+    g.make_move("f1", "e1")
+    g.make_move("f8", "f10")
+    g.make_move("f8", "f8")
+    g.make_move("f3", "f1")
+    g.make_move("f3", "f3")
+    g.make_move("e10", "e9")
+    g.make_move("e1", "e2")
+    g.make_move("f8", "e9")
