@@ -111,8 +111,6 @@ class JanggiGame:
         # change turn
         self.set_whose_turn()
 
-        self._board.print_game_board()
-
         return True
 
 
@@ -1013,5 +1011,5 @@ class Cannon(Piece):
 
 if __name__ == "__main__":
     g = JanggiGame()
-    g.make_move("a7" , "b7")
+    g.make_move("a7", "b7")
     g.make_move("a4", "a4")
