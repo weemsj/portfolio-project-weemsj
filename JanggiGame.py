@@ -49,7 +49,7 @@ class JanggiGame:
 
     def is_in_check(self, player):
         """looks for generals that are in check"""
-        for general in self._board.get_generals_in_check:
+        for general in self._board.get_generals_in_check():
             if general.get_team() == player:
                 return True
         return False
@@ -1011,5 +1011,27 @@ class Cannon(Piece):
 
 if __name__ == "__main__":
     g = JanggiGame()
-    g.make_move("a7", "b7")
-    g.make_move("a4", "a4")
+    g.make_move("c7","c6")
+    g.is_in_check("red")
+    g.is_in_check("blue")
+    g.make_move("c1", "d3")
+    g.is_in_check("red")
+    g.is_in_check("blue")
+    g.make_move("b10", "d7")
+    g.is_in_check("red")
+    g.is_in_check("blue")
+    g.make_move("b3", "e3")
+    g.is_in_check("red")
+    g.is_in_check("blue")
+    g.make_move("c10", "d8")
+    g.is_in_check("red")
+    g.is_in_check("blue")
+    g.make_move("h1", "g3")
+    g.is_in_check("red")
+    g.is_in_check("blue")
+    g.make_move("e7", "e6")
+    g.is_in_check("red")
+    g.is_in_check("blue")
+    g.make_move("e3", "e6")
+    g.is_in_check("red")
+    g.is_in_check("blue")
