@@ -441,7 +441,9 @@ class Board:
         for threat in threats:
             if not threat.move_rules(self, gen_row, gen_col):
                 general.remove_threat(threat)
+                self._generals_in_check.remove(general)
                 return True
+
 
 class Piece:
     """
@@ -1087,3 +1089,5 @@ if __name__ == "__main__":
     print(g.is_in_check("red"))
     print(g.is_in_check("blue"))
     g.make_move("e9", "d9")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
