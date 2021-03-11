@@ -241,10 +241,11 @@ class Board:
         # if future space is occupied check to see if the occupant is on the same team. If the team is the same the
         # move is invalid. If the occupant is the opps team we call the capture method.
         if occupant != "-----":
-            if occupant.get_team() == piece.get_team():
-                return False
-            # capture piece
-            self.capture(row, col)
+            if occupant != piece:
+                if occupant.get_team() == piece.get_team():
+                    return False
+                # capture piece
+                self.capture(row, col)
 
         # the future position is empty and now we move the piece to the future location and empty the pieces
         # current location.
@@ -379,7 +380,7 @@ class Board:
         row = general.get_row()
         col = general.get_col()
         neutralize = []
-        move_direction = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+        move_direction = [(1, 0), (0, 1), (-1, 0), (0, -1),(0, 0)]
 
         for threat in threats:
             threat_row = threat.get_row()
@@ -596,7 +597,7 @@ class Soldier(Piece):
         # check if any moves are outside the game board
         for ele in range(0, len(self._move_map)):
             for x, y in self._move_map:
-                if board_len <= x or x < 0 or board_width < y or y < 0:
+                if board_len <= x or x < 0 or board_width <= y or y < 0:
                     self._move_map.remove((x, y))
                     ele -= 1
 
@@ -698,7 +699,7 @@ class Horse(Piece):
         # check if any moves are outside the game board:
         for ele in range(0, len(self._move_map)):
             for x,y in self._move_map:
-                if board_len <= x or x < 0 or board_width < y or y < 0:
+                if board_len <= x or x < 0 or board_width <= y or y < 0:
                     self._move_map.remove((x, y))
                     ele -= 1
 
@@ -971,6 +972,8 @@ class Cannon(Piece):
                         after_jump += 1
                     check_x, check_y = check_x + x, check_y + y
 
+        self._move_map.append((self._row, self._col))
+
         # if piece is in the fortress invoke fortress moves
         blue_fortress = board_obj.get_blue_fortress()
         red_fortress = board_obj.get_red_fortress()
@@ -1010,18 +1013,5 @@ class Cannon(Piece):
 
 if __name__ == "__main__":
     g = JanggiGame()
-    g.make_move("e9", "f8")
-    g.make_move("e2", "f3")
-    g.make_move("f8", "g8")
-    g.make_move("f8", "f8")
-    g.make_move("f3", "f4")
-    g.make_move("f3", "f3")
-    g.make_move("f10", "e10")
-    g.make_move("f1", "e1")
-    g.make_move("f8", "f10")
-    g.make_move("f8", "f8")
-    g.make_move("f3", "f1")
-    g.make_move("f3", "f3")
-    g.make_move("e10", "e9")
-    g.make_move("e1", "e2")
-    g.make_move("f8", "e9")
+    g.make_move("a7" , "b7")
+    g.make_move("a4", "a4")
