@@ -108,6 +108,8 @@ class JanggiGame:
         if not self._board.move_piece(piece, fut_row, fut_col):
             return False
 
+        self._board.print_game_board()
+
         # change turn
         self.set_whose_turn()
 
@@ -293,27 +295,26 @@ class Board:
         piece.reset_move_map()
 
         # locate the opps general to see if the future location (generals location) is a valid move
-        general_obj, row, col = self.locate_general(piece)
+        general, row, col = self.locate_general(piece)
 
         # generate a new move map with the generals location as the move to if its a valid move the general is in check
         if piece.move_rules(self, row, col):
-            general = general_obj()
-            general_obj.set_check(piece)
-            self.general_in_check(general)
-
+            general.set_checked(piece)
+            self._generals_in_check.append(general)
+            return
         # if next move doesn't create a checked scenario, check the generals checked_by list to make sure the piece
         # isn't listed. If the piece is listed, remove the piece from the list. If there is only one element in the list
         # and the element is the newly moved piece then take the piece out of check and check by = False
-        checked_by = general_obj.get_checked()
+        checked_by = general.get_checked()
 
         if checked_by:
             for obj in checked_by:
                 if obj == piece:
-                    general_obj.remove_check(piece)
+                    general.remove_check(piece)
 
         if not checked_by:
             for gen in self._generals_in_check:
-                if gen == general_obj:
+                if gen == general:
                     self._generals_in_check.remove(gen)
 
         # delete hypothetical move_map
@@ -957,17 +958,21 @@ class Cannon(Piece):
                         # is a cannon
                         title = piece.get_title()
                         if title[1] != "N":
-                            # occupant isn't a cannon so we add the move to the move map
-                            check_x, check_y = check_x + x, check_y + y
-                            self._move_map.append((check_x, check_y))
-                            after_jump += 1
+                            # occupant isn't a cannon so we check to see if a jump has already been made and if the land
+                            # will be a potential capture
+                            if after_jump == 1:
+                                self._move_map.append((check_x, check_y))
+                                after_jump += 1
+                            elif after_jump == 0:
+                                check_x, check_y = check_x + x, check_y + y
+                                self._move_map.append((check_x, check_y))
+                                after_jump += 1
                         else:
                             after_jump = 0
                     check_x, check_y = check_x + x, check_y + y
                 if piece == "-----":
                     if after_jump > 0:
                         self._move_map.append((check_x, check_y))
-                        after_jump += 1
                     check_x, check_y = check_x + x, check_y + y
 
         self._move_map.append((self._row, self._col))
@@ -1012,26 +1017,56 @@ class Cannon(Piece):
 if __name__ == "__main__":
     g = JanggiGame()
     g.make_move("c7","c6")
-    g.is_in_check("red")
-    g.is_in_check("blue")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
     g.make_move("c1", "d3")
-    g.is_in_check("red")
-    g.is_in_check("blue")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
     g.make_move("b10", "d7")
-    g.is_in_check("red")
-    g.is_in_check("blue")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
     g.make_move("b3", "e3")
-    g.is_in_check("red")
-    g.is_in_check("blue")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
     g.make_move("c10", "d8")
-    g.is_in_check("red")
-    g.is_in_check("blue")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
     g.make_move("h1", "g3")
-    g.is_in_check("red")
-    g.is_in_check("blue")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
     g.make_move("e7", "e6")
-    g.is_in_check("red")
-    g.is_in_check("blue")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
     g.make_move("e3", "e6")
-    g.is_in_check("red")
-    g.is_in_check("blue")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
+    g.make_move("h8", "c8")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
+    g.make_move("d3", "e5")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
+    g.make_move("c8", "c4")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
+    g.make_move("e5", "c4")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
+    g.make_move("i10", "i8")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
+    g.make_move("g4", "f4")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
+    g.make_move("i8", "f8")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
+    g.make_move("g3", "h5")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
+    g.make_move("h10", "g8")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
+    g.make_move("e6", "e3")
+    print(g.is_in_check("red"))
+    print(g.is_in_check("blue"))
