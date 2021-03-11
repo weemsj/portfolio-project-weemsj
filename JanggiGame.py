@@ -108,8 +108,6 @@ class JanggiGame:
         if not self._board.move_piece(piece, fut_row, fut_col):
             return False
 
-        self._board.print_game_board()
-
         # change turn
         self.set_whose_turn()
 
